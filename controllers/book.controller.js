@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Book = require("../models/book.model");
 const Publisher = require("../models/publisher.model");
 const generateCode = require("../utils/generateCode");
@@ -60,7 +61,8 @@ exports.createBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
-    const { TenSach, DonGia, SoQuyen, MaNXB } = req.body;
+    const { TenSach, DonGia, SoQuyen } = req.body;
+    let MaNXB = req.body.MaNXB;
     const bookId = req.params.id;
 
     // Kiểm tra nhà xuất bản tồn tại nếu có cập nhật MaNXB
@@ -69,6 +71,7 @@ exports.updateBook = async (req, res) => {
       if (!publisher) {
         return res.status(400).json({ message: "Nhà xuất bản không tồn tại" });
       }
+      MaNXB = publisher._id;
     }
 
     const book = await Book.findByIdAndUpdate(
@@ -130,27 +133,4 @@ exports.searchBooks = async (req, res) => {
       .status(500)
       .json({ message: "Lỗi khi tìm kiếm sách", error: error.message });
   }
-};
-
-// Cập nhật thông tin sách
-exports.update = async (req, res) => {
-    try {
-        const { MaSach } = req.params;
-        
-        // Tìm sách theo MaSach thay vì _id
-        const book = await Book.findOneAndUpdate(
-            { MaSach: MaSach },
-            req.body,
-            { new: true }
-        );
-
-        if (!book) {
-            return res.status(404).json({ message: 'Không tìm thấy sách' });
-        }
-
-        res.json({ message: 'Cập nhật sách thành công', data: book });
-    } catch (error) {
-        console.error('Lỗi khi cập nhật sách:', error);
-        res.status(500).json({ message: 'Đã có lỗi xảy ra khi cập nhật sách' });
-    }
 };
