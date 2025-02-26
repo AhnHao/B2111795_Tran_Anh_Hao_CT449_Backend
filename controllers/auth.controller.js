@@ -128,3 +128,61 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
+
+exports.staffLogin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const staff = await Staff.findOne({ username });
+
+        if (!staff || !bcrypt.compareSync(password, staff.password)) {
+            return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+        }
+
+        const token = jwt.sign(
+            { id: staff._id, role: 'staff' },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            token,
+            user: {
+                id: staff._id,
+                username: staff.username,
+                role: 'staff'
+            }
+        });
+    } catch (error) {
+        console.error('Staff login error:', error);
+        res.status(500).json({ message: 'Đã có lỗi xảy ra' });
+    }
+};
+
+exports.readerLogin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const reader = await Reader.findOne({ username });
+
+        if (!reader || !bcrypt.compareSync(password, reader.password)) {
+            return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+        }
+
+        const token = jwt.sign(
+            { id: reader._id, role: 'reader' },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            token,
+            user: {
+                id: reader._id,
+                username: reader.username,
+                role: 'reader'
+            }
+        });
+    } catch (error) {
+        console.error('Reader login error:', error);
+        res.status(500).json({ message: 'Đã có lỗi xảy ra' });
+    }
+};

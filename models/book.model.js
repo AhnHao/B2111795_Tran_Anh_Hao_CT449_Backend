@@ -1,32 +1,34 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const bookSchema = new mongoose.Schema({
-    MaSach: { 
-        type: String, 
-        required: true, 
-        unique: true 
+const bookSchema = new mongoose.Schema(
+  {
+    MaSach: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    TenSach: { 
-        type: String, 
-        required: true 
-    },
-    DongGia: Number,
-    SoQuyen: { 
-        type: Number, 
-        default: 0 
+    TenSach: {
+      type: String,
+      required: true,
     },
     MaNXB: {
-        type: String,
-        ref: 'Publisher',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Publisher",
     },
-    TheoDoi: {
-        MaDocGia: String,
-        NgayMuon: Date,
-        NgayTra: Date
-    }
-}, {
-    timestamps: true
-});
+    DonGia: {
+      type: Number,
+      required: true,
 
-module.exports = mongoose.model('Book', bookSchema);
+    },
+    SoQuyen: {
+      type: Number,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Book", bookSchema);
+
