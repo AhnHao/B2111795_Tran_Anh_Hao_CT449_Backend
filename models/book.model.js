@@ -18,7 +18,6 @@ const bookSchema = new mongoose.Schema(
     DonGia: {
       type: Number,
       required: true,
-
     },
     SoQuyen: {
       type: Number,
@@ -31,4 +30,3 @@ const bookSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Book", bookSchema);
-
