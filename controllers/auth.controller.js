@@ -61,7 +61,7 @@ exports.registerReader = async (req, res) => {
     if (existingStaff || existingReader) {
       return res.status(400).json({
         message:
-          "Số điện thoại đã được sử dụng để đăng ký tài khoản" 
+          "Số điện thoại đã được sử dụng để đăng ký tài khoản"
       });
     }
 
