@@ -6,13 +6,18 @@ exports.requestBorrow = async (req, res) => {
     try {
         const { MaSach } = req.body;
         
-        // Kiểm tra sách tồn tại
+        // Kiểm tra sách tồn tại và số lượng
         const book = await Book.findOne({ MaSach });
         if (!book) {
             return res.status(404).json({ message: 'Không tìm thấy sách' });
         }
+        
+        // Kiểm tra số lượng sách
+        if (book.SoQuyen <= 0) {
+            return res.status(400).json({ message: 'Sách đã hết, không thể mượn' });
+        }
 
-        // Kiểm tra xem độc giả đã có yêu cầu mượn sách này chưa
+        // Kiểm tra yêu cầu trùng lặp
         const existingRequest = await BorrowRequest.findOne({
             MaDocGia: req.user._id,
             MaSach,
@@ -177,9 +182,23 @@ exports.approveRequest = async (req, res) => {
             return res.status(404).json({ message: 'Không tìm thấy yêu cầu' });
         }
 
+        // Kiểm tra và cập nhật số lượng sách
+        const book = await Book.findOne({ MaSach: request.MaSach });
+        if (!book) {
+            return res.status(404).json({ message: 'Không tìm thấy sách' });
+        }
+
+        if (book.SoQuyen <= 0) {
+            return res.status(400).json({ message: 'Sách đã hết, không thể duyệt yêu cầu' });
+        }
+
+        // Giảm số lượng sách
+        book.SoQuyen -= 1;
+        await book.save();
+
+        // Cập nhật yêu cầu mượn
         request.TrangThai = 'đã duyệt';
         request.NgayMuon = new Date();
-        // Tính ngày hẹn trả (ví dụ: 14 ngày sau)
         request.NgayHenTra = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
         await request.save();
 
@@ -257,7 +276,7 @@ exports.getAllBorrowingHistory = async (req, res) => {
     }
 };
 
-// Xử lý trả sách (cho độc giả)
+// Xử lý trả sách
 exports.returnBook = async (req, res) => {
     try {
         const requestId = req.params.id;
@@ -275,6 +294,13 @@ exports.returnBook = async (req, res) => {
         // Kiểm tra trạng thái sách
         if (borrowRequest.TrangThai !== 'đã duyệt' || borrowRequest.NgayTra) {
             return res.status(400).json({ message: 'Không thể trả sách này' });
+        }
+
+        // Tăng số lượng sách
+        const book = await Book.findOne({ MaSach: borrowRequest.MaSach });
+        if (book) {
+            book.SoQuyen += 1;
+            await book.save();
         }
 
         // Cập nhật thông tin trả sách

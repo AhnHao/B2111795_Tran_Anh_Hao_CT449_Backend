@@ -16,8 +16,7 @@ exports.registerStaff = async (req, res) => {
     if (existingStaff || existingReader) {
       return res.status(400).json({
         message:
-          "Số điện thoại đã được đăng ký" +
-          (existingStaff ? " bởi nhân viên khác" : " bởi độc giả khác"),
+          "Số điện thoại đã được sử dụng để đăng ký tài khoản" 
       });
     }
 
@@ -62,8 +61,7 @@ exports.registerReader = async (req, res) => {
     if (existingStaff || existingReader) {
       return res.status(400).json({
         message:
-          "Số điện thoại đã được đăng ký" +
-          (existingStaff ? " bởi nhân viên khác" : " bởi độc giả khác"),
+          "Số điện thoại đã được sử dụng để đăng ký tài khoản" 
       });
     }
 
