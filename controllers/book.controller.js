@@ -30,7 +30,7 @@ exports.getBookById = async (req, res) => {
 
 exports.createBook = async (req, res) => {
   try {
-    const { TenSach, TacGia, DonGia, SoQuyen, MaNXB } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB } = req.body;
 
     // Tìm publisher bằng MaNXB
     const publisher = await Publisher.findOne({ MaNXB: MaNXB });
@@ -45,7 +45,8 @@ exports.createBook = async (req, res) => {
       MaSach,
       TenSach,
       TacGia,
-      MaNXB: publisher._id, // Sử dụng _id của publisher
+      MaNXB: publisher._id,
+      NamXB,
       DonGia,
       SoQuyen,
     });
@@ -66,7 +67,7 @@ exports.createBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
-    const { TenSach, TacGia, DonGia, SoQuyen } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen, NamXB } = req.body;
     let MaNXB = req.body.MaNXB;
     const bookId = req.params.id;
 
@@ -81,7 +82,7 @@ exports.updateBook = async (req, res) => {
 
     const book = await Book.findByIdAndUpdate(
       bookId,
-      { TenSach, TacGia, DonGia, SoQuyen, MaNXB },
+      { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB },
       { new: true }
     ).populate("MaNXB", "TenNXB");
 
