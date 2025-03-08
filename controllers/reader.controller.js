@@ -25,7 +25,7 @@ exports.getReaderById = async (req, res) => {
 
 exports.createReader = async (req, res) => {
     try {
-        const { HoTen, Password, DiaChi, SoDienThoai, NgaySinh, DienThoai } = req.body;
+        const { HoTen, Password, DiaChi, SoDienThoai, NgaySinh } = req.body;
 
         // Kiểm tra SoDienThoai đã tồn tại
         const existingReaderPhone = await Reader.findOne({ SoDienThoai });
@@ -45,8 +45,7 @@ exports.createReader = async (req, res) => {
             Password: hashedPassword,
             DiaChi,
             SoDienThoai,
-            NgaySinh,
-            DienThoai
+            NgaySinh
         });
 
         await newReader.save();
@@ -62,15 +61,14 @@ exports.createReader = async (req, res) => {
 
 exports.updateReader = async (req, res) => {
     try {
-        const { HoTen, DiaChi, SoDienThoai, NgaySinh, DienThoai, Password } = req.body;
+        const { HoTen, DiaChi, SoDienThoai, NgaySinh, Password } = req.body;
         const readerId = req.params.id;
 
         const updateData = {
             HoTen,
             DiaChi,
             SoDienThoai,
-            NgaySinh,
-            DienThoai
+            NgaySinh
         };
 
         // Nếu có cập nhật mật khẩu

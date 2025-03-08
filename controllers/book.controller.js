@@ -1,14 +1,16 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Book = require("../models/book.model");
 const Publisher = require("../models/publisher.model");
 const generateCode = require("../utils/generateCode");
 
 exports.getAllBooks = async (req, res) => {
   try {
-    const books = await Book.find().populate('MaNXB');
+    const books = await Book.find().populate("MaNXB");
     res.json(books);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy danh sách sách", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Lỗi khi lấy danh sách sách", error: error.message });
   }
 };
 
@@ -28,7 +30,7 @@ exports.getBookById = async (req, res) => {
 
 exports.createBook = async (req, res) => {
   try {
-    const { TenSach, DonGia, SoQuyen, MaNXB } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen, MaNXB } = req.body;
 
     // Tìm publisher bằng MaNXB
     const publisher = await Publisher.findOne({ MaNXB: MaNXB });
@@ -42,6 +44,7 @@ exports.createBook = async (req, res) => {
     const newBook = new Book({
       MaSach,
       TenSach,
+      TacGia,
       MaNXB: publisher._id, // Sử dụng _id của publisher
       DonGia,
       SoQuyen,
@@ -50,18 +53,20 @@ exports.createBook = async (req, res) => {
     await newBook.save();
 
     // Populate thông tin nhà xuất bản trước khi trả về
-    const savedBook = await Book.findById(newBook._id).populate('MaNXB');
+    const savedBook = await Book.findById(newBook._id).populate("MaNXB");
 
     res.status(201).json(savedBook);
   } catch (error) {
-    console.error('Error creating book:', error);
-    res.status(500).json({ message: "Lỗi khi tạo sách mới", error: error.message });
+    console.error("Error creating book:", error);
+    res
+      .status(500)
+      .json({ message: "Lỗi khi tạo sách mới", error: error.message });
   }
 };
 
 exports.updateBook = async (req, res) => {
   try {
-    const { TenSach, DonGia, SoQuyen } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen } = req.body;
     let MaNXB = req.body.MaNXB;
     const bookId = req.params.id;
 
@@ -76,7 +81,7 @@ exports.updateBook = async (req, res) => {
 
     const book = await Book.findByIdAndUpdate(
       bookId,
-      { TenSach, DonGia, SoQuyen, MaNXB },
+      { TenSach, TacGia, DonGia, SoQuyen, MaNXB },
       { new: true }
     ).populate("MaNXB", "TenNXB");
 
@@ -86,7 +91,7 @@ exports.updateBook = async (req, res) => {
 
     res.json(book);
   } catch (error) {
-    console.error('Error updating book:', error);
+    console.error("Error updating book:", error);
     res
       .status(500)
       .json({ message: "Lỗi khi cập nhật sách", error: error.message });
@@ -122,6 +127,7 @@ exports.searchBooks = async (req, res) => {
       $or: [
         { TenSach: { $regex: keyword, $options: "i" } },
         { MaSach: { $regex: keyword, $options: "i" } },
+        { TacGia: { $regex: keyword, $options: "i" } },
       ],
     };
 

@@ -11,6 +11,14 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    TacGia: {
+      type: String,
+      required: true,
+    },
+    TacGia: {
+      type: String,
+      required: true,
+    },
     MaNXB: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Publisher",

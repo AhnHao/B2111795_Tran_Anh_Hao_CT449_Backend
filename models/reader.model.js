@@ -22,7 +22,6 @@ const readerSchema = new mongoose.Schema(
       unique: true,
     },
     NgaySinh: Date,
-    DienThoai: String,
   },
   {
     timestamps: true,
