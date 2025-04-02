@@ -30,7 +30,8 @@ exports.getBookById = async (req, res) => {
 
 exports.createBook = async (req, res) => {
   try {
-    const { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB, imageUrl } =
+      req.body;
 
     // Tìm publisher bằng MaNXB
     const publisher = await Publisher.findOne({ MaNXB: MaNXB });
@@ -49,6 +50,7 @@ exports.createBook = async (req, res) => {
       NamXB,
       DonGia,
       SoQuyen,
+      imageUrl, // Add imageUrl to creation
     });
 
     await newBook.save();
@@ -67,7 +69,7 @@ exports.createBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
-    const { TenSach, TacGia, DonGia, SoQuyen, NamXB } = req.body;
+    const { TenSach, TacGia, DonGia, SoQuyen, NamXB, imageUrl } = req.body;
     let MaNXB = req.body.MaNXB;
     const bookId = req.params.id;
 
@@ -82,7 +84,7 @@ exports.updateBook = async (req, res) => {
 
     const book = await Book.findByIdAndUpdate(
       bookId,
-      { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB },
+      { TenSach, TacGia, DonGia, SoQuyen, MaNXB, NamXB, imageUrl }, // Add imageUrl to update
       { new: true }
     ).populate("MaNXB", "TenNXB");
 
