@@ -15,8 +15,7 @@ exports.registerStaff = async (req, res) => {
 
     if (existingStaff || existingReader) {
       return res.status(400).json({
-        message:
-          "Số điện thoại đã được sử dụng để đăng ký tài khoản" 
+        message: "Số điện thoại đã được sử dụng để đăng ký tài khoản",
       });
     }
 
@@ -60,8 +59,7 @@ exports.registerReader = async (req, res) => {
 
     if (existingStaff || existingReader) {
       return res.status(400).json({
-        message:
-          "Số điện thoại đã được sử dụng để đăng ký tài khoản"
+        message: "Số điện thoại đã được sử dụng để đăng ký tài khoản",
       });
     }
 
@@ -127,7 +125,7 @@ exports.login = async (req, res) => {
         SoDienThoai: user.SoDienThoai,
       },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      { expiresIn: process.env.JWT_EXPIRE || "24h" }
     );
 
     res.json({
