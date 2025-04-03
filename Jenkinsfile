@@ -19,7 +19,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    timeout(time: 10, unit: 'MINUTES') {
+                        docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    }
                 }
             }
         }
@@ -28,8 +30,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        docker stop ${APP_NAME} || true
-                        docker rm ${APP_NAME} || true
+                        if docker ps -a --format '{{.Names}}' | grep -q "^${APP_NAME}$"; then
+                            docker stop ${APP_NAME}
+                            docker rm ${APP_NAME}
+                        fi
                     '''
                 }
             }
@@ -37,15 +41,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh """
-                    docker run -d \
-                        --name ${APP_NAME} \
-                        --restart always \
-                        -p 3000:3000 \
-                        -e MONGODB_URI=\${MONGODB_URI} \
-                        -e JWT_SECRET=\${JWT_SECRET} \
-                        ${DOCKER_IMAGE}:${DOCKER_TAG}
-                """
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        sh """
+                            docker run -d \
+                                --name ${APP_NAME} \
+                                --restart always \
+                                -p 3000:3000 \
+                                -e MONGODB_URI=${MONGODB_URI} \
+                                -e JWT_SECRET=${JWT_SECRET} \
+                                ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        """
+                    }
+                }
             }
         }
     }
